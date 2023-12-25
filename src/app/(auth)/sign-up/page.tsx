@@ -25,11 +25,10 @@ const Page = () => {
     resolver: zodResolver(AuthCredentialsValidator),
   });
 
-  const { data } = trpc.anyApiRoute.useQuery();
-  console.log(data);
+  const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({});
 
   const onSubmit = ({ email, password }: TAuthCredentialsValidator) => {
-    //send data to server
+    mutate({ email, password });
   };
 
   return (
@@ -68,6 +67,7 @@ const Page = () => {
                     className={cn({
                       "focus-visible:ring-red-500": errors.password,
                     })}
+                    type="password"
                     placeholder="Password"
                     {...register("password")}
                   />

@@ -18,6 +18,7 @@ const Providers = ({ children }: PropsWithChildren) => {
               credentials: "include",
             });
           },
+          
         }),
       ],
     })
