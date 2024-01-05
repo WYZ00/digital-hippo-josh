@@ -1,4 +1,5 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import ProductReel from "@/components/ProductReel";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ArrowDownToLine, CheckCircle, Leaf } from "lucide-react";
 import Link from "next/link";
@@ -44,7 +45,12 @@ export default function Home() {
             <Button variant="ghost">Our quality promise &rarr;</Button>
           </div>
         </div>
-        {/* TODO:List products */}
+        <ProductReel
+          title="This is test title"
+          subtitle="This is test subtitle"
+          href="/products"
+          query={{ sort: "desc", limit: 4 }}
+        />
       </MaxWidthWrapper>
 
       <section className="border-t border-gray-200 bg-gray-50">
@@ -53,7 +59,8 @@ export default function Home() {
             {perks.map((perk) => (
               <div
                 key={perk.name}
-                className="text-center md:flex md:items-start md:text-start lg:block lg:text-center">
+                className="text-center md:flex md:items-start md:text-start lg:block lg:text-center"
+              >
                 <div className="md:flex-shrink-0 flex justify-center">
                   <div className="h-16 w-16 flex items-center justify-center rounded-full bg-blue-100 text-blue-900">
                     {<perk.Icon className="w-1/3 h-1/3" />}
