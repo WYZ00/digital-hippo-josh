@@ -14,17 +14,20 @@ import { useEffect, useState } from "react";
 const Page = () => {
   const { items, removeItem } = useCart();
 
-  const [isMounted, setIsMounted] = useState(false);
-
   const router = useRouter();
 
   const { mutate: createCheckoutSession, isLoading } =
     trpc.payment.createSession.useMutation({
       onSuccess: ({ url }) => {
         if (url) router.push(url);
+        console.log(url);
+        console.log(process.env.NEXT_PUBLIC_SERVER_URL);
       },
     });
 
+  const productIds = items.map(({ product }) => product.id);
+
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -34,9 +37,7 @@ const Page = () => {
     0
   );
 
-  const productIds = items.map(({ product }) => product.id);
-
-  const fees = 1;
+  const fee = 1;
 
   return (
     <div className="bg-white">
@@ -64,12 +65,12 @@ const Page = () => {
                     src="/hippo-empty-cart.png"
                     fill
                     loading="eager"
-                    alt="Empty Shopping Cart of Hippo"
+                    alt="empty shopping cart hippo"
                   />
                 </div>
                 <h3 className="font-semibold text-2xl">Your cart is empty</h3>
-                <p className="text-muted-foreground">
-                  Woops! Nothing to show here yet.
+                <p className="text-muted-foreground text-center">
+                  Whoops! Nothing to show here yet.
                 </p>
               </div>
             ) : null}
@@ -83,7 +84,7 @@ const Page = () => {
               {isMounted &&
                 items.map(({ product }) => {
                   const label = PRODUCT_CATEGORIES.find(
-                    (category) => category.value === product.category
+                    (c) => c.value === product.category
                   )?.label;
 
                   const { image } = product.images[0];
@@ -102,6 +103,7 @@ const Page = () => {
                           ) : null}
                         </div>
                       </div>
+
                       <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
                         <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
                           <div>
@@ -115,9 +117,13 @@ const Page = () => {
                                 </Link>
                               </h3>
                             </div>
+
                             <div className="mt-1 flex text-sm">
-                              <p className="text-muted-foreground">{label}</p>
+                              <p className="text-muted-foreground">
+                                Category: {label}
+                              </p>
                             </div>
+
                             <p className="mt-1 text-sm font-medium text-gray-900">
                               {formatPrice(product.price)}
                             </p>
@@ -138,6 +144,7 @@ const Page = () => {
 
                         <p className="mt-4 flex space-x-2 text-sm text-gray-700">
                           <Check className="h-5 w-5 flex-shrink-0 text-green-500" />
+
                           <span>Eligible for instant delivery</span>
                         </p>
                       </div>
@@ -146,6 +153,7 @@ const Page = () => {
                 })}
             </ul>
           </div>
+
           <section className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
             <h2 className="text-lg font-medium text-gray-900">Order summary</h2>
 
@@ -163,24 +171,24 @@ const Page = () => {
 
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <span>Flat Transaction Fees</span>
+                  <span>Flat Transaction Fee</span>
                 </div>
                 <div className="text-sm font-medium text-gray-900">
                   {isMounted ? (
-                    formatPrice(fees)
+                    formatPrice(fee)
                   ) : (
                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between border-t border-gray-200">
+              <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                 <div className="text-base font-medium text-gray-900">
                   Order Total
                 </div>
                 <div className="text-base font-medium text-gray-900">
                   {isMounted ? (
-                    formatPrice(fees + cartTotal)
+                    formatPrice(cartTotal + fee)
                   ) : (
                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                   )}
@@ -190,8 +198,8 @@ const Page = () => {
 
             <div className="mt-6">
               <Button
-                onClick={() => createCheckoutSession({ productIds })}
                 disabled={items.length === 0 || isLoading}
+                onClick={() => createCheckoutSession({ productIds })}
                 className="w-full"
                 size="lg"
               >
